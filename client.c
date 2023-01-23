@@ -1,6 +1,12 @@
 #include "common.h"
 
-int main() {
+int main(int num, char** arg) {
+
+    if(num != 3) {
+        printf("Wrong amount of arguments\n");
+        return 1;
+    }
+
     int fd = shm_open("/msg_data", O_RDWR, 0600);
     err(fd == -1, "shm_open");
 
@@ -10,7 +16,7 @@ int main() {
     srand(time(NULL));
     int my_id = rand() % 1000;
 
-    FILE *f = fopen("payload.txt", "r");
+    FILE *f = fopen(arg[1], "r");
     if(f == NULL) {
         printf("Odczyt nieudany");
         return 2;
@@ -31,22 +37,28 @@ int main() {
     u_int32_t *tab = (u_int32_t*) mmap(NULL, sizeof(u_int32_t)*pdata->size, PROT_READ | PROT_WRITE, MAP_SHARED, pay, 0);
 
     for(int i = 0; fscanf(f, "%d", tab+i) == 1; i++) {
-        printf("%d ", *(tab+i));
+        //printf("%d ", *(tab+i));
     }
-
-    printf("\n");
 
     fclose(f);
 
     pdata->id = my_id;
 
     sem_post(&pdata->sem_1);
-
     sem_wait(&pdata->sem_2);
 
     printf("size = %d\n", pdata->size);
 
-    f = fopen("payload_sorted.txt", "w");
+    /*char *new_name = calloc(strlen(arg[1])+7, sizeof(char));
+    if(new_name == NULL) {
+        printf("No memory");
+        return 8;
+    }
+
+    strncpy(new_name, arg[1], strlen(arg[1])-4);
+    strcpy(new_name+strlen(arg[1])-4, "_sorted.txt");*/
+
+    f = fopen(arg[2], "w");
     if(f == NULL) {
         printf("Zapis nieudany");
         return 2;
@@ -59,11 +71,11 @@ int main() {
     sem_post(&pdata->sem_1);
 
     munmap(tab, sizeof(u_int32_t)*pdata->size);
-
-    shm_unlink("/msg_tab");
-
     munmap(pdata, sizeof(struct data_t));
     close(fd);
+    close(pay);
+    shm_unlink("/msg_tab");
+    shm_unlink("/msg_data");
 
     return 0;
 }

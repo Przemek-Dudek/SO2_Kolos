@@ -1,13 +1,14 @@
 #if !defined(_COMMON_H_)
 #define _COMMON_H_
 #include <stdio.h>
-#include <semaphore.h> //sem*
-#include <sys/mman.h> // mmap, munmap, shm_open, shm_unlink
-#include <fcntl.h> // O_*
-#include <stdlib.h> // exit
-#include <unistd.h> // close, ftruncate
-#include <string.h> // strcasecmp
-#include <time.h> // time
+#include <semaphore.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <time.h>
+#include <pthread.h>
 
 struct data_t {
     sem_t sem_1;
@@ -23,4 +24,4 @@ static void err(int c, const char* msg) {
     perror(msg);
     exit(1);
 }
-#endif // _COMMON_H_
+#endif

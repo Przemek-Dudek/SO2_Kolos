@@ -1,3 +1,6 @@
 .idea/
 cmake-build-debug/
 payload_sorted.txt
+data_0007_sorted.txt
+main
+client
